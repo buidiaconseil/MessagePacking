@@ -3,12 +3,24 @@ import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import java.io._
+import java.util._
+import org.apache.avro.io._ 
+import org.apache.avro.generic._
+import org.apache.avro._
+import org.apache.avro.file._
+import java.io.File
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration}
 
 class User {
   var name:String=""
   var age:Int=0
   var cum:String=""
+
   def this(name:String,age:Int,cum:String) {
+      this()
       this.name=name
       this.age=age
       this.cum=cum
@@ -46,7 +58,7 @@ def functionGenerateKryo (file:File,seed:Long,nb:Int)  {
       var coll:ArrayList[User] = new ArrayList[User];
       val r = new scala.util.Random(seed)
       for (i <- 1 to nb) 
-      coll.add(new (User("test",r.nextInt,"") ))
+      coll.add(new User("test",r.nextInt,"") )
       var output:Output  = new Output(new FileOutputStream(file));
       kryo.writeObject(output, coll);
       output.close();
@@ -62,23 +74,25 @@ def functionGenerateJson (file:File,seed:Long,nb:Int)  {
       var coll:ArrayList[User] = new ArrayList[User];
       val r = new scala.util.Random(seed)
       for (i <- 1 to nb) 
-      coll.add(new (User("test",r.nextInt,"") ))
-      objectMapper.writeValue(file, coll);
+      coll.add(new User("test",r.nextInt,"") )
+      mapper.writeValue(file, coll);
 }
 
-def functionReadJson (file:File,seed:Long,nb:int)  {
+def functionReadJson (file:File,seed:Long,nb:Int)  {
        var object2:ArrayList[User] = mapper.readValue(file, classOf[ArrayList[User]]);
 }
 
 def functionGenerateAvro (file:File,seed:Long,nb:Int)  {
       var coll:ArrayList[User] = new ArrayList[User];
       val r = new scala.util.Random(seed)
+      var  datumWriter : DatumWriter[GenericRecord]  = new GenericDatumWriter[GenericRecord](schemaVV1);
       var  dataFileWriter : DataFileWriter[GenericRecord]  = new DataFileWriter[GenericRecord](datumWriter);
       dataFileWriter.create(schemaVV1, file);
        for (i <- 1 to nb) {
         var user1:GenericRecord = new GenericData.Record(schemaVV1);
         user1.put("name", "test");
-        user1.put("favorite_number", r.nextInt);
+        user1.put("age", r.nextInt);
+        user1.put("cum", "");
         dataFileWriter.append(user1);
       }
       

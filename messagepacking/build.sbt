@@ -3,7 +3,7 @@ import Dependencies._
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
-      organization := "com.example",
+      organization := "com.buissondiaz",
       scalaVersion := "2.12.6",
       version      := "0.1.0-SNAPSHOT"
     )),
@@ -12,4 +12,7 @@ lazy val root = (project in file(".")).
   )
 
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.4"
-libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.4"s
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.4"
+libraryDependencies += "org.apache.avro"  %  "avro"  %  "1.8.2"
+libraryDependencies += "org.msgpack" %% "msgpack-scala"  %  "0.8.13"
+libraryDependencies += "com.esotericsoftware" % "kryo" % "5.0.0-RC1"
