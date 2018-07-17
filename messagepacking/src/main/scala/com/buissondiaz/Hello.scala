@@ -47,11 +47,21 @@ object Hello extends Greeting with App {
   val mapper = new ObjectMapper();
   mapper.registerModule(DefaultScalaModule)
 
-
+  val pw = new PrintWriter(new File("stats.csv" ))
+  pw.write("Hello, world")
+  
+  pw.close
   
   println(greeting)
 
-
+  def invokeLater() {
+      
+  
+  }
+def invoke(file:File,seed:Long,nb:Int,callback: => Unit) {
+  callback(file,seed,nb)
+  
+}
 
 
 def functionGenerateKryo (file:File,seed:Long,nb:Int)  {
