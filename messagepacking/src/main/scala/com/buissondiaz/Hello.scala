@@ -4,9 +4,9 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import java.io._
 import java.util._
-import org.apache.avro.io._ 
+//import org.apache.avro.io._ 
 import org.apache.avro.generic._
-import org.apache.avro._
+//import org.apache.avro._
 import org.apache.avro.file._
 import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -25,7 +25,7 @@ import org.msgpack.value.ExtensionValue;
 import org.msgpack.value.FloatValue;
 import org.msgpack.value.IntegerValue;
 import org.msgpack.value.Value;
-
+import io.protostuff.runtime._
 class User {
   var name:String=""
   var age:Int=0
@@ -48,21 +48,29 @@ object Hello extends Greeting with App {
 
   //Avro
   var schemav1 ="{\"namespace\": \"example.avro\",\"type\": \"record\",\"name\": \"User\",\"fields\": [ {\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"age\",  \"type\": \"int\"},{\"name\": \"cum\", \"type\": [\"string\", \"null\"]}]}"
-  var schemaVV1:Schema = new Schema.Parser().parse(schemav1);
+  var schemaVV1:org.apache.avro.Schema = new org.apache.avro.Schema.Parser().parse(schemav1);
 
   //Init Cryo
   var kryo:Kryo = new Kryo();
   kryo.register(classOf[ArrayList[User]]);
   kryo.register(classOf[User]);
 
-  
+  //Json
   val mapper = new ObjectMapper();
   mapper.registerModule(DefaultScalaModule)
+
+  // Protostuff
+  val schema:io.protostuff.Schema[ArrayList[User]] = RuntimeSchema.getSchema(classOf[ArrayList[User]])
+  RuntimeSchema.register(classOf[ArrayList[User]], schema);
+  
+  System.setProperty("protostuff.runtime.collection_schema_on_repeated_fields", "true");
+  
+
 
   var file:File = new File("test.sav")
   var seed:Long = 15
   val pw = new PrintWriter(new File("stats2.csv" ))
-  var listSeq=Seq(1, 10, 100,1000,2000,5000,10000,100000,500000,1000000,3000000,5000000,10000000,11000000,12000000,13000000,14000000,15000000,16000000,17000000,18000000,19000000,20000000,30000000).sorted
+  var listSeq=Seq(1, 10, 100,1000,2000,5000,10000,100000,200000,300000,400000,500000,600000,700000,800000,900000,1000000,2000000,3000000,4000000,5000000,10000000,11000000,14000000,15000000,17000000,19000000,20000000,25000000,27000000,30000000,31000000).sorted
   for (i <- 1 to 30) 
   for (i <- listSeq)   {
     functionAll(functionGenerateKryo,functionReadKryo,file,seed,i,"Kryo")
@@ -70,12 +78,13 @@ object Hello extends Greeting with App {
     functionAll(functionGenerateJson,functionReadJson,file,seed,i,"Json")
     functionAll(functionGenerateAvro,functionReadAvro,file,seed,i,"Avro")
     functionAll(functionGenerateMessagePack,functionReadMessagePack,file,seed,i,"MessagePack")
+    functionAll(functionGenerateProtoStuff,functionReadMessageProtoStuff,file,seed,i,"ProtoStuff")
   }
   pw.close
   
   println(greeting)
 
-  
+   
 
 def functionAll (function1: (File, Long, Int) => Unit,function2: (File, Long, Int) => Unit,file:File,seed:Long,nb:Int,name:String){
   file.delete
@@ -124,7 +133,7 @@ def functionReadJson (file:File,seed:Long,nb:Int)  {
 def functionGenerateAvro (file:File,seed:Long,nb:Int)  {
       var coll:ArrayList[User] = new ArrayList[User];
       val r = new scala.util.Random(seed)
-      var  datumWriter : DatumWriter[GenericRecord]  = new GenericDatumWriter[GenericRecord](schemaVV1);
+      var  datumWriter : org.apache.avro.io.DatumWriter[GenericRecord]  = new GenericDatumWriter[GenericRecord](schemaVV1);
       var  dataFileWriter : DataFileWriter[GenericRecord]  = new DataFileWriter[GenericRecord](datumWriter);
       dataFileWriter.create(schemaVV1, file);
        for (i <- 1 to nb) {
@@ -139,7 +148,7 @@ def functionGenerateAvro (file:File,seed:Long,nb:Int)  {
 }
 
 def functionReadAvro (file:File,seed:Long,nb:Int)  {
-       var datumReader:DatumReader [GenericRecord]  = new GenericDatumReader[GenericRecord](schemaVV1);
+       var datumReader:org.apache.avro.io.DatumReader [GenericRecord]  = new GenericDatumReader[GenericRecord](schemaVV1);
   var dataFileReader:DataFileReader[GenericRecord] = new DataFileReader[GenericRecord](file, datumReader);
   var user:GenericRecord = null;
   while (dataFileReader.hasNext()) {
@@ -153,8 +162,6 @@ def functionReadAvro (file:File,seed:Long,nb:Int)  {
 def functionGenerateMessagePack (file:File,seed:Long,nb:Int)  {
       var coll:ArrayList[User] = new ArrayList[User];
       val r = new scala.util.Random(seed)
-      var  datumWriter : DatumWriter[GenericRecord]  = new GenericDatumWriter[GenericRecord](schemaVV1);
-      var  dataFileWriter : DataFileWriter[GenericRecord]  = new DataFileWriter[GenericRecord](datumWriter);
       var packer:MessagePacker = MessagePack.newDefaultPacker(new FileOutputStream(file));
        for (i <- 1 to nb) {
         packer.packString( "test");
@@ -179,10 +186,31 @@ def functionReadMessagePack (file:File,seed:Long,nb:Int)  {
 
 }
 
-
+def functionGenerateProtoStuff (file:File,seed:Long,nb:Int)  {
+    val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(512)
+      var coll:ArrayList[User] = new ArrayList[User];
+      var output:Output  = new Output(new FileOutputStream(file));
+      val r = new scala.util.Random(seed)
+      for (i <- 1 to nb) 
+      coll.add(new User("test",r.nextInt,"") )
       
-}      
+      val size = io.protostuff.ProtostuffIOUtil.writeTo(output, coll, schema, buffer)
+      println(size)
+      output.close();
+      
+}
 
+def functionReadMessageProtoStuff (file:File,seed:Long,nb:Int)  {
+  var coll:ArrayList[User] = new ArrayList[User]
+  var input:Input  = new Input(new FileInputStream(file))
+  val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(512)
+  io.protostuff.ProtostuffIOUtil.mergeFrom(input, coll,  schema, buffer)
+  println(coll.size)
+  //println(coll.iterator.next)
+}
+
+
+}
       
 
       

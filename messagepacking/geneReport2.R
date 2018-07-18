@@ -5,6 +5,7 @@ Avro<-MyData[MyData$V1=="Avro",]
 Kryo<-MyData[MyData$V1=="Kryo",]
 MessagePack<-MyData[MyData$V1=="MessagePack",]
 Json<-MyData[MyData$V1=="Json",]
+ProtoStuff<-MyData[MyData$V1=="ProtoStuff",]
 
 mean<-aggregate(MyData$V3, list(gp=MyData$V1, mean=MyData$V2), mean)
 max<-aggregate(MyData$V3, list(gp=MyData$V1, max=MyData$V2), max)
@@ -14,18 +15,22 @@ AvroMean<-aggregate(Avro$V3, list(nbMessage=Avro$V2), mean)
 KryoMean<-aggregate(Kryo$V3, list(nbMessage=Kryo$V2), mean)
 MessagePackMean<-aggregate(MessagePack$V3, list(nbMessage=MessagePack$V2), mean)
 JsonMean<-aggregate(Json$V3, list(nbMessage=Json$V2), mean)
+ProtoStuffMean<-aggregate(ProtoStuff$V3, list(nbMessage=ProtoStuff$V2), mean)
 
 max_y <- max(mean$x)
 
-listLab<-c("Avro","Kryo","MessagePack","Json")
+listLab<-c("Avro","Kryo","MessagePack","Json","ProtoStuff")
 #listLab<-c("Avro","Kryo","Json")
-listCol<-c("blue","red","green","black")
+listCol<-c("blue","red","green","black","orange")
 #listCol<-c("blue","red","black")
+listLab<-c("Avro","Kryo","MessagePack","Json")
+listCol<-c("blue","red","green","black")
 
 plot(AvroMean$nbMessage,AvroMean$x, type="o", col="blue",ylim=c(0,max_y),  ann=FALSE)
 lines(KryoMean$nbMessage,KryoMean$x, type="o", pch=22, lty=2,    col="red")
 lines(MessagePackMean$nbMessage,MessagePackMean$x, type="o", pch=22, lty=2,    col="green")
 lines(JsonMean$nbMessage,JsonMean$x, type="o", pch=22, lty=2,    col="black")
+#lines(ProtoStuffMean$nbMessage,ProtoStuffMean$x, type="o", pch=22, lty=2,    col="orange")
 
 # Create a title with a red, bold/italic font
 title(main="Write Time by Number of Message", col.main="black", font.main=2)
@@ -46,6 +51,7 @@ AvroMean<-aggregate(Avro$V4, list(nbMessage=Avro$V2), mean)
 KryoMean<-aggregate(Kryo$V4, list(nbMessage=Kryo$V2), mean)
 MessagePackMean<-aggregate(MessagePack$V4, list(nbMessage=MessagePack$V2), mean)
 JsonMean<-aggregate(Json$V4, list(nbMessage=Json$V2), mean)
+ProtoStuffMean<-aggregate(ProtoStuff$V4, list(nbMessage=ProtoStuff$V2), mean)
 
 max_y <- max(mean$x)
 
@@ -53,6 +59,7 @@ plot(AvroMean$nbMessage,AvroMean$x, type="o", col="blue",ylim=c(0,max_y),  axes=
 lines(KryoMean$nbMessage,KryoMean$x, type="o", pch=22, lty=2,    col="red")
 lines(MessagePackMean$nbMessage,MessagePackMean$x, type="o", pch=22, lty=2,    col="green")
 lines(JsonMean$nbMessage,JsonMean$x, type="o", pch=22, lty=2,    col="black")
+#lines(ProtoStuffMean$nbMessage,ProtoStuffMean$x, type="o", pch=22, lty=2,    col="orange")
 
 # Create a title with a red, bold/italic font
 title(main="Read Time by Number of Message", col.main="black", font.main=2)
@@ -73,6 +80,7 @@ AvroMean<-aggregate(Avro$V5, list(nbMessage=Avro$V2), mean)
 KryoMean<-aggregate(Kryo$V5, list(nbMessage=Kryo$V2), mean)
 MessagePackMean<-aggregate(MessagePack$V5, list(nbMessage=MessagePack$V2), mean)
 JsonMean<-aggregate(Json$V5, list(nbMessage=Json$V2), mean)
+ProtoStuffMean<-aggregate(ProtoStuff$V5, list(nbMessage=ProtoStuff$V2), mean)
 
 max_y <- max(mean$x)
 
@@ -80,6 +88,7 @@ plot(AvroMean$nbMessage,AvroMean$x, type="o", col="blue",ylim=c(0,max_y), axes=T
 lines(KryoMean$nbMessage,KryoMean$x, type="o", pch=22, lty=2,    col="red")
 lines(MessagePackMean$nbMessage,MessagePackMean$x, type="o", pch=22, lty=2,    col="green")
 lines(JsonMean$nbMessage,JsonMean$x, type="o", pch=22, lty=2,    col="black")
+#lines(ProtoStuffMean$nbMessage,ProtoStuffMean$x, type="o", pch=22, lty=2,    col="orange")
 
 # Create a title with a red, bold/italic font
 title(main="File Size by Number of Message", col.main="black", font.main=2)
