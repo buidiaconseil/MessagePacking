@@ -1,11 +1,35 @@
 # MessagePacking
 Study of solution for pack message
 
+4 candidates :
+  - JSON
+  - Avro
+  - Kryo
+  - MessagePack
+
+The same object for all.
+
+## Compare Size
+
+![Image of Size by Solution](messagepacking/fileSize.png)
+
+## Compare Read Time
+
+![Image of Size by Solution](messagepacking/fileRead.png)
+
+## Compare Read Time
+
+![Image of Size by Solution](messagepacking/fileWrite.png)
+
+
+# Links
 - https://github.com/eishay/jvm-serializers/wiki
 - https://google.github.io/flatbuffers/flatbuffers_benchmarks.html
 - http://amzn.github.io/ion-docs/
 - https://github.com/topics/data-serialization
 - http://www.disciplinedagiledelivery.com/agility-at-scale/data-management/
+
+# Issues in forward/backward
 
 Order The association relation The specialization relation
 1 Design Pattern 1 :A conflict between attribute definitions
