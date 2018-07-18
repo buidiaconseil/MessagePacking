@@ -188,22 +188,28 @@ def functionReadMessagePack (file:File,seed:Long,nb:Int)  {
 
 def functionGenerateProtoStuff (file:File,seed:Long,nb:Int)  {
     
-      var coll:ArrayList[User] = new ArrayList[User];
+      var coll:ArrayList[Array[Byte]] = new ArrayList[Array[Byte]];
       var output:Output  = new Output(new FileOutputStream(file));
       val r = new scala.util.Random(seed)
       var byteList:Array[Byte]=Array()
       for (i <- 1 to nb) {
-        val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(512)
+        /*
+        val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(5120000)
         var protostuff:Array[Byte]=null;
         //coll.add(new User("test",r.nextInt,"") )
         protostuff = io.protostuff.ProtostuffIOUtil.toByteArray(new User("test",r.nextInt,""), schema, buffer);
-        var combined:Array[Byte] = new Array[Byte](byteList.length + protostuff.length);
+        byteList = byteList ++ protostuff
+        //coll.add(protostuff)
+        */
+        /*var combined:Array[Byte] = new Array[Byte](byteList.length + protostuff.length);
         System.arraycopy(byteList,0,combined,0         ,byteList.length);
         System.arraycopy(protostuff,0,combined,byteList.length,protostuff.length);
+        byteList=combined
+        */
       }
-      val bos = new FileOutputStream(file)
-      bos.write(byteList)
-      bos.close()
+     // val bos = new FileOutputStream(file)
+     // bos.write(byteList)
+     // bos.close()
       //val size = io.protostuff.ProtostuffIOUtil.writeTo(output, coll, schema, buffer)
       //println(size)
       //output.close();
@@ -214,8 +220,8 @@ def functionReadMessageProtoStuff (file:File,seed:Long,nb:Int)  {
   var coll:ArrayList[User] = new ArrayList[User]
   var input:Input  = new Input(new FileInputStream(file))
   val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(5120000)
-  val bis = new FileInputStream(file)
-  val bArray = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+  //val bis = new FileInputStream(file)
+  //val bArray = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
  // io.protostuff.ProtostuffIOUtil.mergeFrom(input, coll,  schema, buffer)
   println(coll.size)
   //println(coll.iterator.next)
