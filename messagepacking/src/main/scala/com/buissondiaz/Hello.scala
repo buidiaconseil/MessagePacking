@@ -60,8 +60,8 @@ object Hello extends Greeting with App {
   mapper.registerModule(DefaultScalaModule)
 
   // Protostuff
-  val schema:io.protostuff.Schema[ArrayList[User]] = RuntimeSchema.getSchema(classOf[ArrayList[User]])
-  RuntimeSchema.register(classOf[ArrayList[User]], schema);
+  val schema:io.protostuff.Schema[User] = RuntimeSchema.getSchema(classOf[User])
+  RuntimeSchema.register(classOf[User], schema);
   
   System.setProperty("protostuff.runtime.collection_schema_on_repeated_fields", "true");
   
@@ -187,24 +187,36 @@ def functionReadMessagePack (file:File,seed:Long,nb:Int)  {
 }
 
 def functionGenerateProtoStuff (file:File,seed:Long,nb:Int)  {
-    val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(512)
+    
       var coll:ArrayList[User] = new ArrayList[User];
       var output:Output  = new Output(new FileOutputStream(file));
       val r = new scala.util.Random(seed)
-      for (i <- 1 to nb) 
-      coll.add(new User("test",r.nextInt,"") )
-      
-      val size = io.protostuff.ProtostuffIOUtil.writeTo(output, coll, schema, buffer)
-      println(size)
-      output.close();
+      var byteList:Array[Byte]=Array()
+      for (i <- 1 to nb) {
+        val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(512)
+        var protostuff:Array[Byte]=null;
+        //coll.add(new User("test",r.nextInt,"") )
+        protostuff = io.protostuff.ProtostuffIOUtil.toByteArray(new User("test",r.nextInt,""), schema, buffer);
+        var combined:Array[Byte] = new Array[Byte](byteList.length + protostuff.length);
+        System.arraycopy(byteList,0,combined,0         ,byteList.length);
+        System.arraycopy(protostuff,0,combined,byteList.length,protostuff.length);
+      }
+      val bos = new FileOutputStream(file)
+      bos.write(byteList)
+      bos.close()
+      //val size = io.protostuff.ProtostuffIOUtil.writeTo(output, coll, schema, buffer)
+      //println(size)
+      //output.close();
       
 }
 
 def functionReadMessageProtoStuff (file:File,seed:Long,nb:Int)  {
   var coll:ArrayList[User] = new ArrayList[User]
   var input:Input  = new Input(new FileInputStream(file))
-  val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(512)
-  io.protostuff.ProtostuffIOUtil.mergeFrom(input, coll,  schema, buffer)
+  val buffer:io.protostuff.LinkedBuffer = io.protostuff.LinkedBuffer.allocate(5120000)
+  val bis = new FileInputStream(file)
+  val bArray = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+ // io.protostuff.ProtostuffIOUtil.mergeFrom(input, coll,  schema, buffer)
   println(coll.size)
   //println(coll.iterator.next)
 }
