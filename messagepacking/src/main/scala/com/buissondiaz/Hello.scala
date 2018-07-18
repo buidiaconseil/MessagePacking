@@ -1,4 +1,4 @@
-package example
+package com.buissondiaz
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
@@ -13,6 +13,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration}
+import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessagePack.PackerConfig;
+import org.msgpack.core.MessagePack.UnpackerConfig;
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessageFormat;
+import org.msgpack.core.MessagePacker;
+import org.msgpack.core.MessageUnpacker;
+import org.msgpack.value.ArrayValue;
+import org.msgpack.value.ExtensionValue;
+import org.msgpack.value.FloatValue;
+import org.msgpack.value.IntegerValue;
+import org.msgpack.value.Value;
 
 class User {
   var name:String=""
@@ -50,13 +62,14 @@ object Hello extends Greeting with App {
   var file:File = new File("test.sav")
   var seed:Long = 15
   val pw = new PrintWriter(new File("stats2.csv" ))
-  var listSeq=Seq(1, 10, 100,1000,2000,5000,10000,20000,50000,100000,200000,300000,400000,500000,600000,700000,800000,900000,1000000,2000000,3000000,4000000,5000000,10000000,11000000,12000000,13000000,14000000,15000000,16000000,17000000,18000000,19000000,20000000)
+  var listSeq=Seq(1, 10, 100,1000,2000,5000,10000,100000,500000,1000000,3000000,5000000,10000000,11000000,12000000,13000000,14000000,15000000,16000000,17000000,18000000,19000000,20000000,30000000).sorted
   for (i <- 1 to 30) 
   for (i <- listSeq)   {
     functionAll(functionGenerateKryo,functionReadKryo,file,seed,i,"Kryo")
-    if(i<10000000)
+    if(i<12000000)
     functionAll(functionGenerateJson,functionReadJson,file,seed,i,"Json")
     functionAll(functionGenerateAvro,functionReadAvro,file,seed,i,"Avro")
+    functionAll(functionGenerateMessagePack,functionReadMessagePack,file,seed,i,"MessagePack")
   }
   pw.close
   
@@ -136,6 +149,37 @@ def functionReadAvro (file:File,seed:Long,nb:Int)  {
     user = dataFileReader.next(user);
   }
 }
+
+def functionGenerateMessagePack (file:File,seed:Long,nb:Int)  {
+      var coll:ArrayList[User] = new ArrayList[User];
+      val r = new scala.util.Random(seed)
+      var  datumWriter : DatumWriter[GenericRecord]  = new GenericDatumWriter[GenericRecord](schemaVV1);
+      var  dataFileWriter : DataFileWriter[GenericRecord]  = new DataFileWriter[GenericRecord](datumWriter);
+      var packer:MessagePacker = MessagePack.newDefaultPacker(new FileOutputStream(file));
+       for (i <- 1 to nb) {
+        packer.packString( "test");
+        packer.packInt(r.nextInt);
+        packer.packString( "");
+      }
+      
+      packer.close()
+}
+
+def functionReadMessagePack (file:File,seed:Long,nb:Int)  {
+  val unpacker:MessageUnpacker = MessagePack.newDefaultUnpacker(new FileInputStream(file));
+  while (unpacker.hasNext()) {
+            // [Advanced] You can check the detailed data format with getNextFormat()
+            // Here is a list of message pack data format: https://github.com/msgpack/msgpack/blob/master/spec.md#overview
+    val format:MessageFormat = unpacker.getNextFormat();
+
+            // You can also use unpackValue to extract a value of any type
+    val v:Value = unpacker.unpackValue();
+    v.getValueType()
+  }
+
+}
+
+
       
 }      
 
