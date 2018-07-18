@@ -9,6 +9,8 @@ Study of solution for pack message
 
 The same object for all.
 
+Avro a good compromise with schema/validation/ ... features.
+
 ## Compare Size
 
 ![Image of Size by Solution](messagepacking/fileSize.png)
