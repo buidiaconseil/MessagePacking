@@ -21,6 +21,9 @@ Order The association relation The specialization relation
 4 Design Pattern 7 : A conflict between attributes of a supertype and attributes of its subtypes
   Design Pattern 8 : Generalization
 
+$ sbt run -J-Xmx2G
+
+
 # License
 See LICENSE file
 
