@@ -15,7 +15,7 @@ JsonMean<-aggregate(Json$V3, list(nbMessage=Json$V2), mean)
 
 max_y <- max(mean$x)
 
-plot(AvroMean$x, type="o", col="blue",ylim=c(0,max_y),  ann=FALSE)
+plot(AvroMean$x, type="o", col="blue",ylim=c(0,max_y), xaxt="n",  ann=FALSE)
 lines(KryoMean$x, type="o", pch=22, lty=2,    col="red")
 lines(MessagePackMean$x, type="o", pch=22, lty=2,    col="green")
 lines(JsonMean$x, type="o", pch=22, lty=2,    col="black")
@@ -25,7 +25,7 @@ title(main="Write Time by Number of Message", col.main="black", font.main=2)
 
 # Label the x and y axes with dark green text
 title(xlab= "NbMessage", col.lab=rgb(0,0,0))
-title(ylab= "Time", col.lab=rgb(0,0,0))
+title(ylab= "Time (s)", col.lab=rgb(0,0,0))
 axis(1, at=1:12, lab=AvroMean$nbMessage)
 legend(1, max_y, c("Avro","Kryo","MessagePack","Json"), cex=0.8, col=c("blue","red","green","black"), 
        pch=21:23, lty=1:3);
@@ -42,7 +42,7 @@ JsonMean<-aggregate(Json$V4, list(nbMessage=Json$V2), mean)
 
 max_y <- max(mean$x)
 
-plot(AvroMean$x, type="o", col="blue",ylim=c(0,max_y),  axes=FALSE,ann=FALSE)
+plot(AvroMean$x, type="o", col="blue",ylim=c(0,max_y),  axes=TRUE, xaxt="n",ann=FALSE)
 lines(KryoMean$x, type="o", pch=22, lty=2,    col="red")
 lines(MessagePackMean$x, type="o", pch=22, lty=2,    col="green")
 lines(JsonMean$x, type="o", pch=22, lty=2,    col="black")
@@ -52,7 +52,7 @@ title(main="Read Time by Number of Message", col.main="black", font.main=2)
 
 # Label the x and y axes with dark green text
 title(xlab= "NbMessage", col.lab=rgb(0,0,0))
-title(ylab= "Time", col.lab=rgb(0,0,0))
+title(ylab= "Time (s)", col.lab=rgb(0,0,0))
 axis(1, at=1:12, lab=AvroMean$nbMessage)
 legend(1, max_y, c("Avro","Kryo","MessagePack","Json"), cex=0.8, col=c("blue","red","green","black"), 
        pch=21:23, lty=1:3);
@@ -69,7 +69,7 @@ JsonMean<-aggregate(Json$V5, list(nbMessage=Json$V2), mean)
 
 max_y <- max(mean$x)
 
-plot(AvroMean$x, type="o", col="blue",ylim=c(0,max_y), axes=FALSE, ann=FALSE)
+plot(AvroMean$x, type="o", col="blue",ylim=c(0,max_y), axes=TRUE, xaxt="n", ann=FALSE)
 lines(KryoMean$x, type="o", pch=22, lty=2,    col="red")
 lines(MessagePackMean$x, type="o", pch=22, lty=2,    col="green")
 lines(JsonMean$x, type="o", pch=22, lty=2,    col="black")
@@ -81,6 +81,6 @@ title(main="File Size by Number of Message", col.main="black", font.main=2)
 title(xlab= "NbMessage", col.lab=rgb(0,0,0))
 title(ylab= "File Size", col.lab=rgb(0,0,0))
 axis(1, at=1:12, lab=AvroMean$nbMessage)
-axis(2, at=0:max_y)
+
 legend(1, max_y, c("Avro","Kryo","MessagePack","Json"), cex=0.8, col=c("blue","red","green","black"), 
        pch=21:23, lty=1:3);

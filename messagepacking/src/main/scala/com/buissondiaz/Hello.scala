@@ -47,22 +47,38 @@ object Hello extends Greeting with App {
   val mapper = new ObjectMapper();
   mapper.registerModule(DefaultScalaModule)
 
-  val pw = new PrintWriter(new File("stats.csv" ))
-  pw.write("Hello, world")
-  
+  var file:File = new File("test.sav")
+  var seed:Long = 15
+  val pw = new PrintWriter(new File("stats2.csv" ))
+  var listSeq=Seq(1, 10, 100,1000,2000,5000,10000,20000,50000,100000,200000,300000,400000,500000,600000,700000,800000,900000,1000000,2000000,3000000,4000000,5000000,10000000,11000000,12000000,13000000)
+  for (i <- 1 to 30) 
+  for (i <- listSeq)   {
+    functionAll(functionGenerateKryo,functionReadKryo,file,seed,i,"Kryo")
+    if(i<10000000)
+    functionAll(functionGenerateJson,functionReadJson,file,seed,i,"Json")
+    functionAll(functionGenerateAvro,functionReadAvro,file,seed,i,"Avro")
+  }
   pw.close
   
   println(greeting)
 
-  def invokeLater() {
-      
   
-  }
-def invoke(file:File,seed:Long,nb:Int,callback: => Unit) {
-  callback(file,seed,nb)
-  
-}
 
+def functionAll (function1: (File, Long, Int) => Unit,function2: (File, Long, Int) => Unit,file:File,seed:Long,nb:Int,name:String){
+  file.delete
+  System.gc
+  println("Start "+name+" "+nb)
+  var timeStart=System.currentTimeMillis
+  function1(file,seed,nb)
+  var timeInt:Long=System.currentTimeMillis
+  var length:Long=file.length
+  var timeIntStart:Long=System.currentTimeMillis
+  function2 (file,seed,nb)
+  var timeEnd:Long=System.currentTimeMillis
+  pw.write(name+","+nb+","+(timeInt-timeStart)/1000.0+","+(timeEnd-timeIntStart)/1000.0+","+length+"\n")
+  pw.flush
+  file.delete
+}
 
 def functionGenerateKryo (file:File,seed:Long,nb:Int)  {
       var coll:ArrayList[User] = new ArrayList[User];
@@ -118,7 +134,6 @@ def functionReadAvro (file:File,seed:Long,nb:Int)  {
     // allocating and garbage collecting many objects for files with
     // many items.
     user = dataFileReader.next(user);
-    println(user);
   }
 }
       
