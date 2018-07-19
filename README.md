@@ -15,13 +15,21 @@ Avro a good compromise with schema/validation/ ... features.
 
 ![Image of Size by Solution](messagepacking/fileSize.png)
 
-## Compare Read Time
+## Compare DeSerialization Time
 
 ![Image of Size by Solution](messagepacking/fileRead.png)
 
-## Compare Read Time
+## Compare Serialization Time
 
 ![Image of Size by Solution](messagepacking/fileWrite.png)
+
+## Compare DeSerialization Speed
+
+![Image of Size by Solution](messagepacking/speedRead.png)
+
+## Compare Serialization Speed
+
+![Image of Size by Solution](messagepacking/speedWrite.png)
 
 
 # Links
